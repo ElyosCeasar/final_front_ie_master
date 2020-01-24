@@ -3,7 +3,7 @@ import { Menu, Icon, Button, Switch } from "antd";
 import React from "react";
 import Sticky from "react-sticky-el";
 import { Link } from "react-router-dom";
-var jwt = require("jsonwebtoken");
+import authService from "../../services/authService";
 class NavBar extends React.Component {
   state = {
     collapsed: false
@@ -53,14 +53,14 @@ class NavBar extends React.Component {
                 </span>
               </Link>
             </Menu.Item>
-            {/* <Menu.Item key="2">
-              <Link to="/FormCreater" style={{ color: "white" }}>
-                <Icon type="form" />
+            <Menu.Item key="2">
+              <a onClick={this.logout} style={{ color: "white" }}>
+                <Icon type="logout" />
                 <span style={{ marginRight: "3px" }}>
-                  {this.props.direc === "rtl" ? "فرم ساخت" : "Creating Form"}
+                  {this.props.direc === "rtl" ? "خروج" : "Log Out"}
                 </span>
-              </Link>
-            </Menu.Item> */}
+              </a>
+            </Menu.Item>
 
             <Switch
               checkedChildren="Fa"
@@ -122,14 +122,14 @@ class NavBar extends React.Component {
                 </span>
               </Link>
             </Menu.Item>
-            {/* <Menu.Item key="2">
-              <Link to="/FormCreater" style={{ color: "white" }}>
-                <Icon type="form" />
+            <Menu.Item key="2">
+              <a onClick={this.logout} style={{ color: "white" }}>
+                <Icon type="logout" />
                 <span style={{ marginRight: "3px" }}>
-                  {this.props.direc === "rtl" ? "فرم ساخت" : "Creating Form"}
+                  {this.props.direc === "rtl" ? "خروج" : "Log Out"}
                 </span>
-              </Link>
-            </Menu.Item> */}
+              </a>
+            </Menu.Item>
 
             <Switch
               checkedChildren="Fa"
@@ -147,6 +147,10 @@ class NavBar extends React.Component {
       </Sticky>
     );
   };
+  logout() {
+    const authServices = new authService();
+    authServices.logout();
+  }
 }
 
 export default NavBar;

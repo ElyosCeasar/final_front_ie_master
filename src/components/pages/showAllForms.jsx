@@ -1,7 +1,8 @@
 import { Table, Button } from "antd";
 import React from "react";
 import appService from "../../services/appService";
-var jwt = require("jsonwebtoken");
+import authService from "../../services/authService";
+
 class ShowAllForms extends React.Component {
   columns = [];
   state = {
@@ -82,7 +83,6 @@ class ShowAllForms extends React.Component {
         return 0;
       });
       this.setState({ data: data });
-      //   console.log(this.props.role);
     });
   }
 
@@ -125,13 +125,23 @@ class ShowAllForms extends React.Component {
         render: (text, record) => (
           <span>
             <Button type="primary" onClick={() => this.handleShow(record.key)}>
-              {this.props.direc === "rtl" ? "پر کردن" : "filling the form"}
+              {this.rolebasedButtonCreater()}
             </Button>
           </span>
         )
       }
     ];
   };
+  rolebasedButtonCreater() {
+    const authServices = new authService();
+
+    if (authServices.getRole() === "fieldAgent") {
+      return this.props.direc === "rtl" ? "پر کردن" : "fill";
+    } else {
+      //control center
+      return this.props.direc === "rtl" ? "مشاهده" : "show";
+    }
+  }
 
   render() {
     this.headerFixer();
@@ -143,8 +153,8 @@ class ShowAllForms extends React.Component {
       >
         <h3 style={{ color: "white", marginRight: "3px", marginLeft: "3px" }}>
           {this.props.direc === "rtl"
-            ? "مشاهده تمام فرم های ساخته شده"
-            : "Showing all created form"}
+            ? "مشاهده تمام فرم های موجود"
+            : "Showing all forms"}
         </h3>
         <Table
           columns={this.columns}

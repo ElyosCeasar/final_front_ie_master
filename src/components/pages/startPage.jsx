@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Form, Icon, Input, Button, Checkbox } from "antd";
+import authService from "../../services/authService";
 class StartPage extends Component {
   state = {};
   handleSubmit = e => {
@@ -7,12 +8,8 @@ class StartPage extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
-        localStorage.setItem(
-          this.props.tokenName,
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlIjoiZmllbGRBZ2VudCIsInVzZXJuYW1lIjoiSm9obiBEb2UiLCJleHAiOjE1Nzk4MTQ1MDUwfQ.7nBllYKIYHoJDvuJvagxVviyFshKCSo51A7ptkI-JgI"
-        );
-        window.location.reload();
-        // this.props.needsReRenderAfterLogin();
+        const authServices = new authService();
+        authServices.login(values);
       }
     });
   };

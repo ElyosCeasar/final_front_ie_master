@@ -7,7 +7,7 @@ import { Route, Switch } from "react-router-dom";
 import ShowSpeceficForm from "./components/pages/showSpeceficForm";
 import StartPage from "./components/pages/startPage";
 import { Form } from "antd";
-var jwt = require("jsonwebtoken");
+import authService from "./services/authService";
 
 class App extends React.Component {
   state = {
@@ -18,8 +18,7 @@ class App extends React.Component {
       title: "Form",
       Elements: [],
       lastId: 0
-    },
-    tokenName: "token8"
+    }
   };
   componentDidMount() {
     window.addEventListener("resize", this.resize.bind(this));
@@ -35,11 +34,9 @@ class App extends React.Component {
   }
   render() {
     const { smallSize } = this.state;
-    if (
-      localStorage.getItem(this.state.tokenName) !== null &&
-      !this.checkIfTokenIsExpired()
-    ) {
-      this.logUserOutInExpirtim();
+    const authServices = new authService();
+    if (authServices.isTokenExist() && !authServices.checkIfTokenIsExpired()) {
+      authServices.logUserOutInExpirtim();
       if (smallSize) {
         return (
           <div style={{ direction: this.state.direc }}>{this.BigView()}</div>
@@ -54,7 +51,7 @@ class App extends React.Component {
         StartPage
       );
       return (
-        <WrappedNormalLoginForm tokenName={this.state.tokenName} />
+        <WrappedNormalLoginForm />
         //  <StartPage  />
       );
     }
@@ -73,11 +70,7 @@ class App extends React.Component {
                   <Route
                     path="/ShowAllForms"
                     render={props => (
-                      <ShowAllForms
-                        role={this.getRole()}
-                        direc={this.state.direc}
-                        {...props}
-                      />
+                      <ShowAllForms direc={this.state.direc} {...props} />
                     )}
                   />
 
@@ -90,11 +83,7 @@ class App extends React.Component {
                   <Route
                     path="/"
                     render={props => (
-                      <ShowAllForms
-                        role={this.getRole()}
-                        direc={this.state.direc}
-                        {...props}
-                      />
+                      <ShowAllForms direc={this.state.direc} {...props} />
                     )}
                   />
                 </Switch>
@@ -130,11 +119,7 @@ class App extends React.Component {
                   <Route
                     path="/ShowAllForms"
                     render={props => (
-                      <ShowAllForms
-                        role={this.getRole()}
-                        direc={this.state.direc}
-                        {...props}
-                      />
+                      <ShowAllForms direc={this.state.direc} {...props} />
                     )}
                   />
 
@@ -147,11 +132,7 @@ class App extends React.Component {
                   <Route
                     path="/"
                     render={props => (
-                      <ShowAllForms
-                        role={this.getRole()}
-                        direc={this.state.direc}
-                        {...props}
-                      />
+                      <ShowAllForms direc={this.state.direc} {...props} />
                     )}
                   />
                 </Switch>
@@ -179,11 +160,7 @@ class App extends React.Component {
               <Route
                 path="/ShowAllForms"
                 render={props => (
-                  <ShowAllForms
-                    role={this.getRole()}
-                    direc={this.state.direc}
-                    {...props}
-                  />
+                  <ShowAllForms direc={this.state.direc} {...props} />
                 )}
               />
 
@@ -196,11 +173,7 @@ class App extends React.Component {
               <Route
                 path="/"
                 render={props => (
-                  <ShowAllForms
-                    role={this.getRole()}
-                    direc={this.state.direc}
-                    {...props}
-                  />
+                  <ShowAllForms direc={this.state.direc} {...props} />
                 )}
               />
             </Switch>
@@ -222,32 +195,6 @@ class App extends React.Component {
     // console.log(st);
     this.setState({ formCreaterState: st });
   };
-
-  checkIfTokenIsExpired() {
-    var isExpired = false;
-
-    var decodedToken = this.getDecodedToken();
-    const secondsSinceEpoch = Math.round(Date.now() / 1000);
-
-    if (decodedToken.payload.exp < secondsSinceEpoch) {
-      isExpired = true;
-    }
-    return isExpired;
-  }
-  getDecodedToken() {
-    const token = localStorage.getItem(this.state.tokenName);
-    var decodedToken = jwt.decode(token, { complete: true });
-    return decodedToken;
-  }
-  logUserOutInExpirtim() {
-    setInterval(() => {
-      if (this.checkIfTokenIsExpired()) window.location.reload();
-    }, 10000);
-  }
-  getRole() {
-    console.log(this.getDecodedToken);
-    return this.getDecodedToken().payload.Role;
-  }
 }
 
 export default App;
