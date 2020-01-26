@@ -46,7 +46,7 @@ class ShowDashbordForSpeceficForm extends Component {
         key: "area",
         width: 100,
         align: "center",
-        render: text => <span style={{ color: "#001529" }}>59</span>
+        render: text => <span style={{ color: "#001529" }}>{text}</span>
       }
     ];
     const partMiddle = this.getMiddlePart();
@@ -111,9 +111,9 @@ class ShowDashbordForSpeceficForm extends Component {
           {this.props.direc === "rtl"
             ? "داشبرد فرم بحران"
             : "disaster dashboard"}
-          {/* {
-            this.state.f
-            } */}
+          {typeof this.state.form !== "undefined"
+            ? " " + this.state.form.title + " "
+            : ""}
         </h3>
         <div
           style={{
@@ -123,7 +123,10 @@ class ShowDashbordForSpeceficForm extends Component {
             padding: 10
           }}
         >
-          درصد پاسخ‌های این فرم به کل پاسخ‌ها
+          {this.props.direc === "rtl"
+            ? "درصد پاسخ‌های این فرم به کل پاسخ‌ها"
+            : "this form answers per all answers"}
+
           <Progress
             style={{ paddingRight: "8px", paddingLeft: "20px" }}
             type="circle"
@@ -140,7 +143,9 @@ class ShowDashbordForSpeceficForm extends Component {
           }}
         >
           <CSVLink data={this.state.data}>
-            <Button type="primary">گرفتن خروجی csv</Button>
+            <Button type="primary">
+              {this.props.direc === "rtl" ? "گرفتن خروجی csv" : "export csv"}
+            </Button>
           </CSVLink>
           {/* <CSVLink data={this.state.data}>Download me</CSVLink> */}
 
@@ -194,14 +199,14 @@ class ShowDashbordForSpeceficForm extends Component {
   getPercent(id) {
     const aservice = new answerService();
     aservice.getAnswerStatesticByFormId(id).then(res => {
-      console.log("per", res);
+      // console.log("per", res);
       this.setState({ percent: res.data });
     });
   }
   getData() {
     if (typeof this.state.form !== "undefined") {
       // console.log("s1", this.state.formAnswerArray);
-      // console.log("s2", this.state.form.fields);
+      console.log("s2", this.state.form.title);
       const answers = this.state.formAnswerArray;
       const form = this.state.form.fields;
       const data = [];
@@ -216,7 +221,7 @@ class ShowDashbordForSpeceficForm extends Component {
         row._id = answers[i]._id;
         data.push(row);
       }
-      console.log("x86", data);
+
       this.setState({ data: data });
       // this.data = data;
     }
