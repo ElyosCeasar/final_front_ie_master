@@ -168,9 +168,7 @@ class ShowDashbordForSpeceficForm extends Component {
       </div>
     );
   }
-  getCsv() {
-    alert("not implimented");
-  }
+
   getMiddlePart() {
     let res = [];
     if (typeof this.state.form !== "undefined") {
@@ -203,7 +201,7 @@ class ShowDashbordForSpeceficForm extends Component {
   getData() {
     if (typeof this.state.form !== "undefined") {
       // console.log("s1", this.state.formAnswerArray);
-      console.log("s2", this.state.form.fields);
+      // console.log("s2", this.state.form.fields);
       const answers = this.state.formAnswerArray;
       const form = this.state.form.fields;
       const data = [];
@@ -215,12 +213,16 @@ class ShowDashbordForSpeceficForm extends Component {
         }
         row.username = answers[i].username;
         row.time = answers[i].time;
+        row._id = answers[i]._id;
         data.push(row);
       }
       console.log("x86", data);
       this.setState({ data: data });
       // this.data = data;
     }
+  }
+  handleShow(answerId) {
+    alert(answerId);
   }
 }
 
