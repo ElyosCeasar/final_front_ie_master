@@ -3,7 +3,9 @@ import { Table, Button, Progress } from "antd";
 import answerService from "../../services/answerService";
 import appService from "../../services/appService";
 class ShowDashbordForSpeceficForm extends Component {
-  state = {};
+  state = {
+    formAnswerArray: []
+  };
   columns = [];
   componentDidMount() {
     const id = this.props.match.params.id;
@@ -153,23 +155,27 @@ class ShowDashbordForSpeceficForm extends Component {
   }
   getMiddlePart() {
     console.log("s7", this.state);
+    if (typeof this.state.form !== "undefined")
+      console.log("s6", this.state.form.fields[0]);
     let res = [];
-    for (let i = 0; i < this.state.formAnswerArray.length; i++) {
-      const newItem = {
-        title: (
-          <span style={{ color: "#006bd7" }}>
-            {this.props.direc === "rtl" ? "تاریخ ارسال" : "time"}
-          </span>
-        ),
-        dataIndex: "time",
-        key: "time",
-        width: 100,
-        align: "center",
+    if (typeof this.state.form !== "undefined")
+      for (let i = 0; i < this.state.form.fields.length; i++) {
+        const newItem = {
+          title: (
+            <span style={{ color: "#006bd7" }}>
+              {this.state.form.fields[i].title}
+            </span>
+          ),
+          dataIndex: "time",
+          key: "time",
+          width: 150,
+          align: "center",
 
-        render: text => <span style={{ color: "#001529" }}>{text}</span>
-      };
-    }
-    return [];
+          render: text => <span style={{ color: "#001529" }}>{text}</span>
+        };
+        res.push(newItem);
+      }
+    return res;
   }
 }
 
