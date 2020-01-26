@@ -41,6 +41,10 @@ class authService {
       .then(res => {
         if (res !== null) {
           localStorage.setItem(this.tokenName, res.data);
+          if (this.getRole() == "admin") {
+            localStorage.removeItem(this.tokenName);
+            alert("ادمین اجازه‌ی ورود به این بخش را ندارد");
+          }
           window.location.reload();
         }
       })
