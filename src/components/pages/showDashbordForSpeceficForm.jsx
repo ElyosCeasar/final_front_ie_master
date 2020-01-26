@@ -1,12 +1,15 @@
 import React, { Component } from "react";
+import { CSVLink, CSVDownload } from "react-csv";
 import { Table, Button, Progress } from "antd";
 import answerService from "../../services/answerService";
 import appService from "../../services/appService";
 class ShowDashbordForSpeceficForm extends Component {
   state = {
-    formAnswerArray: []
+    percent: 0,
+    data: []
   };
   columns = [];
+
   componentDidMount() {
     const id = this.props.match.params.id;
     const aservice = new answerService();
@@ -20,6 +23,15 @@ class ShowDashbordForSpeceficForm extends Component {
             this.setState({ formAnswerArray: res2.data, form: res.data.form })
           )
       );
+    this.getPercent(id);
+    this.getData();
+    const idOfInterval = setInterval(() => {
+      if (this.state.data.length === 0) {
+        this.getData();
+      } else {
+        clearInterval(idOfInterval);
+      }
+    }, 1000);
   }
 
   headerFixer = () => {
@@ -88,6 +100,7 @@ class ShowDashbordForSpeceficForm extends Component {
   };
   render() {
     this.headerFixer();
+
     return (
       <div
         style={{
@@ -98,6 +111,9 @@ class ShowDashbordForSpeceficForm extends Component {
           {this.props.direc === "rtl"
             ? "داشبرد فرم بحران"
             : "disaster dashboard"}
+          {/* {
+            this.state.f
+            } */}
         </h3>
         <div
           style={{
@@ -111,7 +127,7 @@ class ShowDashbordForSpeceficForm extends Component {
           <Progress
             style={{ paddingRight: "8px", paddingLeft: "20px" }}
             type="circle"
-            percent={100}
+            percent={this.state.percent}
             status="normal"
           />
         </div>
@@ -123,9 +139,11 @@ class ShowDashbordForSpeceficForm extends Component {
             padding: 10
           }}
         >
-          <Button type="primary" onClick={this.getCsv}>
-            گرفتن خروجی csv
-          </Button>
+          <CSVLink data={this.state.data}>
+            <Button type="primary">گرفتن خروجی csv</Button>
+          </CSVLink>
+          {/* <CSVLink data={this.state.data}>Download me</CSVLink> */}
+
           <Table
             columns={this.columns}
             dataSource={this.state.data}
@@ -154,11 +172,8 @@ class ShowDashbordForSpeceficForm extends Component {
     alert("not implimented");
   }
   getMiddlePart() {
-    console.log("s7", this.state);
-    if (typeof this.state.form !== "undefined")
-      console.log("s6", this.state.form.fields[0]);
     let res = [];
-    if (typeof this.state.form !== "undefined")
+    if (typeof this.state.form !== "undefined") {
       for (let i = 0; i < this.state.form.fields.length; i++) {
         const newItem = {
           title: (
@@ -166,8 +181,8 @@ class ShowDashbordForSpeceficForm extends Component {
               {this.state.form.fields[i].title}
             </span>
           ),
-          dataIndex: "time",
-          key: "time",
+          dataIndex: this.state.form.fields[i].name,
+          key: this.state.form.fields[i].name,
           width: 150,
           align: "center",
 
@@ -175,7 +190,37 @@ class ShowDashbordForSpeceficForm extends Component {
         };
         res.push(newItem);
       }
+    }
     return res;
+  }
+  getPercent(id) {
+    const aservice = new answerService();
+    aservice.getAnswerStatesticByFormId(id).then(res => {
+      console.log("per", res);
+      this.setState({ percent: res.data });
+    });
+  }
+  getData() {
+    if (typeof this.state.form !== "undefined") {
+      // console.log("s1", this.state.formAnswerArray);
+      console.log("s2", this.state.form.fields);
+      const answers = this.state.formAnswerArray;
+      const form = this.state.form.fields;
+      const data = [];
+      for (let i = 0; i < answers.length; i++) {
+        const row = {};
+        row.area = 51;
+        for (let j = 0; j < form.length; j++) {
+          row[form[j].name] = answers[i].fields[j].answer;
+        }
+        row.username = answers[i].username;
+        row.time = answers[i].time;
+        data.push(row);
+      }
+      console.log("x86", data);
+      this.setState({ data: data });
+      // this.data = data;
+    }
   }
 }
 

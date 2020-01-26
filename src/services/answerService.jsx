@@ -17,6 +17,12 @@ class appService {
       this.authServices.getTokenForSend()
     );
   };
+  getAnswerStatesticByFormId = id => {
+    return axios.get(
+      this.url + "/api/answer/getAnswerStatesticByFormId/" + id,
+      this.authServices.getTokenForSend()
+    );
+  };
 }
 
 export default appService;
