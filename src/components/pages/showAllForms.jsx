@@ -171,7 +171,13 @@ class ShowAllForms extends React.Component {
     // return <Table columns={this.columns} dataSource={this.data} />;
   }
   handleShow(id) {
-    this.props.history.push("/ShowSpeceficForm/" + id);
+    const authServices = new authService();
+    if (authServices.getRole() === "fieldAgent") {
+      this.props.history.push("/ShowSpeceficForm/" + id);
+    } else {
+      //control center
+      this.props.history.push("/ShowDashbordForSpeceficForm/" + id);
+    }
   }
 }
 

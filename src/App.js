@@ -8,6 +8,7 @@ import ShowSpeceficForm from "./components/pages/showSpeceficForm";
 import StartPage from "./components/pages/startPage";
 import { Form } from "antd";
 import authService from "./services/authService";
+import ShowDashbordForSpeceficForm from "./components/pages/showDashbordForSpeceficForm";
 
 class App extends React.Component {
   state = {
@@ -73,11 +74,20 @@ class App extends React.Component {
                       <ShowAllForms direc={this.state.direc} {...props} />
                     )}
                   />
-
                   <Route
                     path="/ShowSpeceficForm/:id"
                     render={props => (
                       <ShowSpeceficForm direc={this.state.direc} {...props} />
+                    )}
+                  />
+
+                  <Route
+                    path="/ShowDashbordForSpeceficForm/:id"
+                    render={props => (
+                      <ShowDashbordForSpeceficForm
+                        direc={this.state.direc}
+                        {...props}
+                      />
                     )}
                   />
                   <Route
@@ -130,6 +140,15 @@ class App extends React.Component {
                     )}
                   />
                   <Route
+                    path="/ShowDashbordForSpeceficForm/:id"
+                    render={props => (
+                      <ShowDashbordForSpeceficForm
+                        direc={this.state.direc}
+                        {...props}
+                      />
+                    )}
+                  />
+                  <Route
                     path="/"
                     render={props => (
                       <ShowAllForms direc={this.state.direc} {...props} />
@@ -168,6 +187,15 @@ class App extends React.Component {
                 path="/ShowSpeceficForm/:id"
                 render={props => (
                   <ShowSpeceficForm direc={this.state.direc} {...props} />
+                )}
+              />
+              <Route
+                path="/ShowDashbordForSpeceficForm/:id"
+                render={props => (
+                  <ShowDashbordForSpeceficForm
+                    direc={this.state.direc}
+                    {...props}
+                  />
                 )}
               />
               <Route

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import answerService from "../../services/answerService";
 import appService from "../../services/appService";
 import {
   Button,
@@ -23,8 +23,6 @@ class ShowSpeceficForm extends Component {
     service
       .getSpeceficFormById(id)
       .then(res => this.setState({ form: res.data.form }));
-
-    // .then(res => console.log(res.data.form));
   }
   componentDidUpdate() {
     if (this.state.form.fields && this.firstTimeForSetState) {
@@ -285,10 +283,13 @@ class ShowSpeceficForm extends Component {
     this.setState({ ElementValues: ElementValues });
   };
   submitForm = () => {
-    const service = new appService();
+    const service = new answerService();
     if (this.checker()) {
       service
-        .postComplitedFormByClient(this.formatOutput(), this.state.form.id)
+        .postComplitedFormByClient(
+          this.formatOutput(),
+          this.props.match.params.id
+        )
         .then(x => {
           notification.success({
             message: this.props.direc === "rtl" ? "عملیات انجام شد" : "Success",
