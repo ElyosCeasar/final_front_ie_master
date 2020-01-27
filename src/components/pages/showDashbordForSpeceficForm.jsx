@@ -188,12 +188,14 @@ class ShowDashbordForSpeceficForm extends Component {
         <div
           style={{
             backgroundColor: "white",
-            height: "100px",
+
             marginBottom: "20px",
             marginTop: "20px",
             padding: 10
           }}
-        ></div>
+        >
+          {this.getFooter()}
+        </div>
       </div>
     );
   }
@@ -229,7 +231,7 @@ class ShowDashbordForSpeceficForm extends Component {
   }
   async getData() {
     if (typeof this.state.form !== "undefined") {
-      //console.log("s1", this.state.formAnswerArray);
+      console.log("s1", this.state.formAnswerArray);
       //  console.log("s2", this.state.form.title);
       const areaServices = new areaService();
       const answers = this.state.formAnswerArray;
@@ -280,7 +282,47 @@ class ShowDashbordForSpeceficForm extends Component {
   handleShow(answerId) {
     this.props.history.push("/ShowSpeceficFormForManager/" + answerId);
   }
-  //start modal par
+  //start footer part
+  getFooter() {
+    let res = [];
+    if (typeof this.state.form !== "undefined") {
+      const NumberOfNumberColumns = this.FindAllNumbersOfColumnNumbers();
+      for (let i = 0; i < NumberOfNumberColumns.length; i++) {
+        res.push(this.createSumOfColumn(NumberOfNumberColumns[i]));
+      }
+    }
+    return res;
+  }
+  FindAllNumbersOfColumnNumbers() {
+    let res = [];
+    for (let i = 0; i < this.state.form.fields.length; i++) {
+      if (this.state.form.fields[i].type === "Number") {
+        res.push(i);
+      }
+    }
+    return res;
+  }
+  createSumOfColumn(i) {
+    return (
+      <div>
+        <span>
+          <b>{this.state.form.fields[i].title}</b>
+        </span>
+        {" " + ":" + " "}
+        <span style={{ color: "#006bd7" }}>{this.getSumColumn(i)}</span>
+      </div>
+    );
+  }
+  getSumColumn(index) {
+    const answers = this.state.formAnswerArray;
+    let sum = 0;
+    for (let i = 0; i < answers.length; i++) {
+      sum += answers[i].fields[index].answer;
+    }
+    return sum;
+  }
+  //end footer
+  //start modal part
   showModal = () => {
     this.setState({
       visible: true
