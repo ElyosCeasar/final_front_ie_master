@@ -1,12 +1,22 @@
 import React, { Component } from "react";
 import { CSVLink, CSVDownload } from "react-csv";
-import { Table, Button, Progress } from "antd";
+import {
+  Table,
+  Button,
+  Progress,
+  Modal,
+  Input,
+  DatePicker,
+  InputNumber
+} from "antd";
 import answerService from "../../services/answerService";
 import appService from "../../services/appService";
+import areaService from "../../services/areaService";
 class ShowDashbordForSpeceficForm extends Component {
   state = {
     percent: 0,
-    data: []
+    data: [],
+    visible: false
   };
   columns = [];
 
@@ -142,13 +152,27 @@ class ShowDashbordForSpeceficForm extends Component {
             padding: 10
           }}
         >
+          <Button
+            style={{ marginRight: "5px", marginLeft: "10px" }}
+            type="primary"
+            icon="search"
+            onClick={this.showModal}
+          >
+            {this.props.direc === "rtl" ? "جست‌ و‌ جو" : "search"}
+          </Button>
           <CSVLink data={this.state.data}>
             <Button type="primary">
               {this.props.direc === "rtl" ? "گرفتن خروجی csv" : "export csv"}
             </Button>
           </CSVLink>
-          {/* <CSVLink data={this.state.data}>Download me</CSVLink> */}
-
+          <Modal
+            title={this.props.direc === "rtl" ? "جست‌ و‌ جو" : "search"}
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
+            {this.getSearchItem()}
+          </Modal>
           <Table
             columns={this.columns}
             dataSource={this.state.data}
@@ -203,10 +227,11 @@ class ShowDashbordForSpeceficForm extends Component {
       this.setState({ percent: res.data });
     });
   }
-  getData() {
+  async getData() {
     if (typeof this.state.form !== "undefined") {
       //console.log("s1", this.state.formAnswerArray);
       //  console.log("s2", this.state.form.title);
+      const areaServices = new areaService();
       const answers = this.state.formAnswerArray;
       const form = this.state.form.fields;
       const data = [];
@@ -217,10 +242,21 @@ class ShowDashbordForSpeceficForm extends Component {
 
       for (let i = 0; i < answers.length; i++) {
         const row = {};
-        row.area = 51;
+
         for (let j = 0; j < form.length; j++) {
           if (columnTypes[j] === "Location") {
             row[form[j].name] = this.props.direc === "rtl" ? "نقشه" : "map";
+
+            if (answers[i].fields[j].answer.length > 0) {
+              await areaServices
+                .getAllAreasNameForPoligon(answers[i].fields[j].answer)
+                .then(data => {
+                  console.log("x24", data);
+                  row.area = data.data.join();
+                });
+            } else {
+              row.area = "ندارد";
+            }
           } else row[form[j].name] = answers[i].fields[j].answer;
         }
         row.username = answers[i].username;
@@ -230,12 +266,95 @@ class ShowDashbordForSpeceficForm extends Component {
       }
 
       this.setState({ data: data, columnTypes: columnTypes });
+      // setTimeout(() => {
+      //   this.setState({ data: data, columnTypes: columnTypes });
+      //   setTimeout(() => {
+      //     //retry
+      //     this.setState({ data: data, columnTypes: columnTypes });
+      //   }, 1200);
+      // }, 800);
+
       // this.data = data;
     }
   }
   handleShow(answerId) {
     this.props.history.push("/ShowSpeceficFormForManager/" + answerId);
   }
+  //start modal par
+  showModal = () => {
+    this.setState({
+      visible: true
+    });
+  };
+  handleOk = e => {
+    console.log(e);
+    this.setState({
+      visible: false
+    });
+  };
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false
+    });
+  };
+
+  getSearchItem() {
+    let res = [];
+
+    if (typeof this.state.form !== "undefined") {
+      for (let i = 0; i < this.state.form.fields.length; i++) {
+        console.log("lala", this.state.form.fields);
+        if (this.state.form.fields[i].type === "Location") {
+          res.push(this.buildItemMap(this.state.form.fields[i]));
+        } else if (this.state.form.fields[i].type === "Date") {
+          res.push(this.buildItemDate(this.state.form.fields[i]));
+        } else if (this.state.form.fields[i].type === "Number") {
+          res.push(this.buildItemNumber(this.state.form.fields[i]));
+        } else {
+          res.push(this.buildItemNotSpecial(this.state.form.fields[i]));
+        }
+      }
+      // res.push(this.buildItemLastPart(this.state.form));
+    }
+    return res;
+  }
+  buildItemNotSpecial(row) {
+    return (
+      <div>
+        <span>{row.title} :</span>
+        <Input></Input>
+      </div>
+    );
+  }
+  buildItemDate(row) {
+    return (
+      <div>
+        <span>{row.title} :</span>
+        <DatePicker style={{ display: "block", width: "100%" }}></DatePicker>
+      </div>
+    );
+  }
+  buildItemMap(row) {
+    return (
+      <div>
+        <span>
+          {row.title} (لطفا با قرمت زیر نقطه‌ی مورد نظر را وارد کنید):
+        </span>
+        <Input></Input>
+      </div>
+    );
+  }
+  buildItemNumber(row) {
+    return (
+      <div>
+        <span>{row.title} :</span>
+        <InputNumber style={{ display: "block", width: "100%" }}></InputNumber>
+      </div>
+    );
+  }
+  //end modal part
 }
 
 export default ShowDashbordForSpeceficForm;
