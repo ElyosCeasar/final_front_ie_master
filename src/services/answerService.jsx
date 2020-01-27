@@ -11,6 +11,12 @@ class appService {
       this.authServices.getTokenForSend()
     );
   };
+  getById = id => {
+    return axios.get(
+      this.url + "/api/answer/" + id,
+      this.authServices.getTokenForSend()
+    );
+  };
   getAllAnswersByFormId = id => {
     return axios.get(
       this.url + "/api/answer/getAllAnswersByFormId/" + id,

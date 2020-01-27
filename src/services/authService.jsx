@@ -34,7 +34,8 @@ class authService {
   }
   logout() {
     localStorage.removeItem(this.tokenName);
-    window.location.reload();
+    document.location.href = "/";
+    // window.location.reload();
   }
   login(val) {
     this.signIn(val.username, val.password)

@@ -205,16 +205,23 @@ class ShowDashbordForSpeceficForm extends Component {
   }
   getData() {
     if (typeof this.state.form !== "undefined") {
-      // console.log("s1", this.state.formAnswerArray);
-      console.log("s2", this.state.form.title);
+      //console.log("s1", this.state.formAnswerArray);
+      //  console.log("s2", this.state.form.title);
       const answers = this.state.formAnswerArray;
       const form = this.state.form.fields;
       const data = [];
+      const columnTypes = [];
+      for (let j = 0; j < form.length; j++) {
+        columnTypes.push(form[j].type);
+      }
+
       for (let i = 0; i < answers.length; i++) {
         const row = {};
         row.area = 51;
         for (let j = 0; j < form.length; j++) {
-          row[form[j].name] = answers[i].fields[j].answer;
+          if (columnTypes[j] === "Location") {
+            row[form[j].name] = this.props.direc === "rtl" ? "نقشه" : "map";
+          } else row[form[j].name] = answers[i].fields[j].answer;
         }
         row.username = answers[i].username;
         row.time = answers[i].time;
@@ -222,12 +229,12 @@ class ShowDashbordForSpeceficForm extends Component {
         data.push(row);
       }
 
-      this.setState({ data: data });
+      this.setState({ data: data, columnTypes: columnTypes });
       // this.data = data;
     }
   }
   handleShow(answerId) {
-    alert(answerId);
+    this.props.history.push("/ShowSpeceficFormForManager/" + answerId);
   }
 }
 
