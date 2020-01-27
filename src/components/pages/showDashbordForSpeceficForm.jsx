@@ -339,7 +339,18 @@ class ShowDashbordForSpeceficForm extends Component {
       const row = {};
       row.type = this.state.form.fields[i].type;
       row.name = this.state.form.fields[i].name;
-      row.value = this.state.ElementValues[i];
+      if (row.type !== "Location") row.value = this.state.ElementValues[i];
+      else
+        row.value = {
+          lat: this.state.ElementValues[i].substring(
+            0,
+            this.state.ElementValues[i].lastIndexOf("|")
+          ),
+          lng: this.state.ElementValues[i].substring(
+            this.state.ElementValues[i].lastIndexOf("|") + 1
+          )
+        };
+      console.log("ppp", row.value);
       searchItem.push(row);
     }
 
@@ -434,11 +445,12 @@ class ShowDashbordForSpeceficForm extends Component {
     return (
       <div>
         <span>
-          {row.title} (لطفا با قرمت زیر نقطه‌ی مورد نظر را وارد کنید):
+          {row.title} (لطفا با فرمت زیر نقطه‌ی مورد نظر را وارد کنید):
         </span>
         <Input
           value={ElementValue}
           itemId={i}
+          placeholder="lng|lat"
           key={i}
           onChange={this.inputOnChangeHandeler}
         ></Input>
