@@ -29,6 +29,13 @@ class appService {
       this.authServices.getTokenForSend()
     );
   };
+  filterAnswersForGrid = (searchItems, formId) => {
+    return axios.post(
+      this.url + "/api/answer/filterAnswersForGrid/ " + formId,
+      searchItems,
+      this.authServices.getTokenForSend()
+    );
+  };
 }
 
 export default appService;

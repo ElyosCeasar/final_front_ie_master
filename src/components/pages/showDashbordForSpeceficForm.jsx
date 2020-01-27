@@ -7,15 +7,19 @@ import {
   Modal,
   Input,
   DatePicker,
-  InputNumber
+  InputNumber,
+  Select,
+  notification
 } from "antd";
 import answerService from "../../services/answerService";
 import appService from "../../services/appService";
 import areaService from "../../services/areaService";
+const { Option } = Select;
 class ShowDashbordForSpeceficForm extends Component {
   state = {
     percent: 0,
     data: [],
+    ElementValues: [],
     visible: false
   };
   columns = [];
@@ -329,10 +333,32 @@ class ShowDashbordForSpeceficForm extends Component {
     });
   };
   handleOk = e => {
-    console.log(e);
-    this.setState({
-      visible: false
-    });
+    console.log("zio" + this.state.ElementValues);
+    const searchItem = [];
+    for (let i = 0; i < this.state.form.fields.length; i++) {
+      const row = {};
+      row.type = this.state.form.fields[i].type;
+      row.name = this.state.form.fields[i].name;
+      row.value = this.state.ElementValues[i];
+      searchItem.push(row);
+    }
+
+    const formId = this.props.match.params.id;
+    const aservice = new answerService();
+    aservice
+      .filterAnswersForGrid(searchItem, formId)
+      .then(res => {
+        console.log("filter", res);
+        this.setState({
+          formAnswerArray: res.data
+        });
+      })
+      .finally(() => {
+        this.getData();
+        this.setState({
+          visible: false
+        });
+      });
   };
 
   handleCancel = e => {
@@ -344,58 +370,116 @@ class ShowDashbordForSpeceficForm extends Component {
 
   getSearchItem() {
     let res = [];
-
+    let ElementValues = [...this.state.ElementValues];
     if (typeof this.state.form !== "undefined") {
       for (let i = 0; i < this.state.form.fields.length; i++) {
         console.log("lala", this.state.form.fields);
         if (this.state.form.fields[i].type === "Location") {
-          res.push(this.buildItemMap(this.state.form.fields[i]));
+          res.push(
+            this.buildItemMap(this.state.form.fields[i], i, ElementValues[i])
+          );
         } else if (this.state.form.fields[i].type === "Date") {
-          res.push(this.buildItemDate(this.state.form.fields[i]));
+          //for now
+          // res.push(
+          //   this.buildItemDate(this.state.form.fields[i], i, ElementValues[i])
+          // );
         } else if (this.state.form.fields[i].type === "Number") {
-          res.push(this.buildItemNumber(this.state.form.fields[i]));
+          res.push(
+            this.buildItemNumber(this.state.form.fields[i], i, ElementValues[i])
+          );
         } else {
-          res.push(this.buildItemNotSpecial(this.state.form.fields[i]));
+          res.push(
+            this.buildItemNotSpecial(
+              this.state.form.fields[i],
+              i,
+              ElementValues[i]
+            )
+          );
         }
       }
       // res.push(this.buildItemLastPart(this.state.form));
     }
     return res;
   }
-  buildItemNotSpecial(row) {
+  buildItemNotSpecial(row, i, ElementValue) {
     return (
       <div>
         <span>{row.title} :</span>
-        <Input></Input>
+        <Input
+          value={ElementValue}
+          itemId={i}
+          key={i}
+          onChange={this.inputOnChangeHandeler}
+        ></Input>
       </div>
     );
   }
-  buildItemDate(row) {
+  buildItemDate(row, i, ElementValue) {
     return (
       <div>
         <span>{row.title} :</span>
-        <DatePicker style={{ display: "block", width: "100%" }}></DatePicker>
+        <DatePicker
+          id={"xdate" + i}
+          style={{ display: "block", width: "100%" }}
+          value={ElementValue}
+          defaultValue={0}
+          itemId={i}
+          key={i}
+          onChange={e => this.DatePickerOnChangeHandeler(e, i)}
+        ></DatePicker>
       </div>
     );
   }
-  buildItemMap(row) {
+  buildItemMap(row, i, ElementValue) {
     return (
       <div>
         <span>
           {row.title} (لطفا با قرمت زیر نقطه‌ی مورد نظر را وارد کنید):
         </span>
-        <Input></Input>
+        <Input
+          value={ElementValue}
+          itemId={i}
+          key={i}
+          onChange={this.inputOnChangeHandeler}
+        ></Input>
       </div>
     );
   }
-  buildItemNumber(row) {
+  buildItemNumber(row, i, ElementValue) {
     return (
       <div>
         <span>{row.title} :</span>
-        <InputNumber style={{ display: "block", width: "100%" }}></InputNumber>
+        <InputNumber
+          style={{ display: "block", width: "100%" }}
+          value={ElementValue}
+          itemId={i}
+          key={i}
+          onChange={e => this.inputNumberOnChangeHandeler(e, i)}
+        ></InputNumber>
       </div>
     );
   }
+  inputOnChangeHandeler = e => {
+    //itemid is also index of ElementValues
+    // console.log(e.target.value);
+
+    let ElementValues = [...this.state.ElementValues];
+    ElementValues[e.target.getAttribute("itemId")] = e.target.value; //can also get i directly like others
+    this.setState({ ElementValues: ElementValues });
+  };
+  inputNumberOnChangeHandeler = (e, i) => {
+    // console.log(e);
+    let ElementValues = [...this.state.ElementValues];
+    ElementValues[i] = e;
+    this.setState({ ElementValues: ElementValues });
+  };
+  DatePickerOnChangeHandeler = (e, i) => {
+    // console.log(e._d, i);
+    let ElementValues = [...this.state.ElementValues];
+    ElementValues[i] = e._d;
+    this.setState({ ElementValues: ElementValues });
+  };
+
   //end modal part
 }
 
