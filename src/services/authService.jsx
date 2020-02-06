@@ -1,8 +1,8 @@
 import axios from "axios";
 var jwt = require("jsonwebtoken");
 class authService {
-  url = "http://localhost:5000";
-  //url = "http://hw2-ie-back-master.herokuapp.com";
+  // url = "http://localhost:5000";
+  url = "https://final-ie-back.herokuapp.com";
   tokenName = "token";
 
   checkIfTokenIsExpired() {
