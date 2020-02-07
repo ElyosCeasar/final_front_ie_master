@@ -2,7 +2,9 @@ import React, { Component } from "react";
 import { Form, Icon, Input, Button, Checkbox } from "antd";
 import authService from "../../services/authService";
 class StartPage extends Component {
-  state = {};
+  state = {
+    smallSize: false
+  };
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -13,6 +15,16 @@ class StartPage extends Component {
       }
     });
   };
+  componentDidMount() {
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
+  }
+
+  resize() {
+    const resizeRes = window.innerWidth <= 850;
+    console.log("is small", resizeRes);
+    this.setState({ smallSize: resizeRes });
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
 
@@ -21,7 +33,7 @@ class StartPage extends Component {
         style={{
           position: "absolute",
           backgroundColor: "#001529",
-          width: "50%",
+          width: this.state.smallSize == true ? "92%" : "40%",
           height: "300px",
           left: 0,
           right: 0,
