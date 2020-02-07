@@ -31,7 +31,7 @@ class StartPage extends Component {
     return (
       <div
         style={{
-          position: "absolute",
+          position: "sticky",
           backgroundColor: "#001529",
           width: this.state.smallSize == true ? "92%" : "40%",
           height: "300px",
