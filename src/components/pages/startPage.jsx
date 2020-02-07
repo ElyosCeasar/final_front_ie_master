@@ -39,10 +39,7 @@ class StartPage extends Component {
           right: 0,
           top: 0,
           bottom: 0,
-          margin: "auto",
-          maxWidth: "100%",
-          maxHeight: "100%",
-          overflow: "auto"
+          margin: "auto"
         }}
       >
         <div
